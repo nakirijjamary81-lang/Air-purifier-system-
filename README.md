@@ -15,9 +15,9 @@ Threshold Values
 #define PM25_THRESHOLD 75
 #define PM10_THRESHOLD 100
 These define danger levels:
-If gas value > 300 → Air is polluted
-If PM2.5 > 75 µg/m³ → Dangerous
-If PM10 > 100 µg/m³ → Dangerous
+*If gas value > 300 → Air is polluted
+*If PM2.5 > 75 µg/m³ → Dangerous
+*If PM10 > 100 µg/m³ → Dangerous
 These values should be adjusted after sensor calibration.
 
 step by step instructions 
@@ -47,23 +47,23 @@ This runs continuously.
 
 Step 1: Read MQ135 Gas Sensor
 int gasValue = analogRead(MQ135_PIN);
-Reads analog voltage (0–1023)
-Higher value = more gas concentration
+*Reads analog voltage (0–1023)
+*Higher value = more gas concentration
 
 Step 2: Read PM2.5 and PM10
 bool valid = readZPH01(&pm25, &pm10);
 This calls your custom function to extract:
-PM2.5 value
-PM10 value
+*PM2.5 value
+*PM10 value
 
 Step 3: Display on LCD
 First line:
 G:xxx P2:xx
-Gas level
-PM2.5 value
+*Gas level
+*PM2.5 value
 Second line:
 P10:xx
-PM10 value
+*PM10 value
 
 Step 4: Air Quality Decision Logic
 if (gasValue > GAS_THRESHOLD || pm25 > PM25_THRESHOLD || pm10 > PM10_THRESHOLD)
@@ -100,9 +100,9 @@ Step 4: Extract PM Values
 *pm10 = ((int)data[2] << 8) | data[3];
 This combines two bytes into one integer:
 Example:
-High byte << 8
-OR with low byte
-Gives final PM value
+*High byte << 8
+*OR with low byte
+*Gives final PM value
 
 Step 5: Return True if Valid
 return true;
