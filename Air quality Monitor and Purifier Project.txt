@@ -1,0 +1,100 @@
+//Air quality Monitor and Purifier Project 
+// Presenters:Gulere Derick, Nkatta Emmanuel, Omega Moses, Atuheire Ronyx, Nakirijja, Mary Naava, Bisuti Conrad Alinange 
+
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+#include <SoftwareSerial.h>
+
+// I2C LCD
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+// Dust Sensor Serial 
+SoftwareSerial dustSerial(2, 3); // RX (to ZPH01 TX), TX 
+
+// Pin definitions
+#define MQ135_PIN A0          // Gas sensor analog pin
+#define FAN_PIN 7             // Fan control via relay
+#define BUZZER_PIN 8          // Buzzer for alert
+#define LED_PIN 9             // LED indicator
+
+// Thresholds (adjust based on calibration)
+#define GAS_THRESHOLD 300     // Analog value from MQ135
+#define PM25_THRESHOLD 75     // PM2.5 in µg/m3
+#define PM10_THRESHOLD 100    // PM10 in µg/m3
+
+void setup() {
+  // Start serial monitors
+  Serial.begin(9600);
+  dustSerial.begin(9600); // ZPH01 default baud rate
+
+  // Initialize LCD
+  lcd.backlight();
+   lcd.init();
+  lcd.setCursor(0, 0);
+  lcd.print("Air Quality Init");
+
+  // Pin setups
+  pinMode(FAN_PIN, OUTPUT);
+  pinMode(BUZZER_PIN, OUTPUT);
+  pinMode(LED_PIN, OUTPUT);
+
+  // Default off
+  digitalWrite(FAN_PIN, LOW);
+  digitalWrite(BUZZER_PIN, LOW);
+  digitalWrite(LED_PIN, LOW);
+
+  delay(2000);
+  lcd.clear();
+}
+
+void loop() {
+  // Read MQ135 analog gas value
+  int gasValue = analogRead(MQ135_PIN);
+
+  // Read PM2.5 and PM10 from ZPH01
+  int pm25 = 0, pm10 = 0;
+  bool valid = readZPH01(&pm25, &pm10);
+
+  // Display results on LCD
+  lcd.setCursor(0, 0);
+  lcd.print("G:");
+  lcd.print(gasValue);
+  lcd.print(" P2:");
+  lcd.print(pm25);
+
+  lcd.setCursor(0, 1);
+  lcd.print("P10:");
+  lcd.print(pm10);
+  lcd.print(" ");
+
+  // Safety checks
+  if (gasValue > GAS_THRESHOLD || pm25 > PM25_THRESHOLD || pm10 > PM10_THRESHOLD) {
+    digitalWrite(FAN_PIN, HIGH);     // Turn on fan
+    digitalWrite(BUZZER_PIN, HIGH);  // Turn on buzzer
+    digitalWrite(LED_PIN, HIGH);     // Turn on LED
+  } else {
+    digitalWrite(FAN_PIN, LOW);
+    digitalWrite(BUZZER_PIN, LOW);
+    digitalWrite(LED_PIN, LOW);
+  }
+
+  delay(2000);
+}
+
+// Function to read and parse ZPH01 UART data
+bool readZPH01(int* pm25, int* pm10) {
+  if (dustSerial.available() >= 9) {
+    // Look for start byte (0xFF)
+    if (dustSerial.read() == 0xFF) {
+      byte data[9];
+      dustSerial.readBytes(data, 9);
+
+      // Basic checksum 
+      *pm25 = ((int)data[0] << 8) | data[1];  // PM2.5
+      *pm10 = ((int)data[2] << 8) | data[3];  // PM10
+
+      return true;
+    }
+  }
+  return false;
+}
