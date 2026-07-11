@@ -2,7 +2,7 @@
 Arduino based air purifier with gas and dust detector
 Problem statement; Indoor air pollution has become a major health threat due to increasing levels of dust, smog, smoke and harmful gases in residential, commercial and industrial environment. Prolonged exposure to poor indoor air quality causes respiratory diseases, allergies and reduces over wellbeing of especially vulnerable groups like children, elderly and individuals with asthma.
 
- Solution; To develop a low-cost and energy efficient automated air purifier using Arduino. The system uses MQ135 and DSM501A sensors to detect gas and dust levels. When pollution exceedes safe thresholds 300ppm for gas and 100 micro gram per meter cubed for dust the system automatically turns ON a fan to purify the air and activates a buzzer to alert users. Air quality readings are displayed on an LCD for real-time monitoring. 
+ Solution; To develop a low-cost and energy efficient automated air purifier using Arduino. The system uses MQ135 and DSM501A sensors to detect gas and dust levels. When pollution exceedes safe thresholds 300ppm for gas and 100 micro gram per meter cubed for dust the system automatically turns ON a fan to purify the air and activates a buzzer to alert users. Air quality readings are displayed on an LCD for real-time monitoring . 
  
 Component	Arduino Pin	Purpose
 MQ135	A0	Reads gas level
